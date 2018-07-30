@@ -1,6 +1,9 @@
-import { Track } from './Track';
+/// <reference path="../phaser.d.ts"/>
 
-export class TrackPointSprite extends Phaser.GameObjects.Sprite {
+import { Track } from './Track';
+import Sprite = Phaser.GameObjects.Sprite;
+
+export class TrackPointSprite extends Sprite {
 	private track: Track;
 
 	public setTrack(track: Track) {

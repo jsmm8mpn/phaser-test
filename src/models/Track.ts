@@ -1,5 +1,6 @@
 import Sprite = Phaser.GameObjects.Sprite;
 import { TrackPointSprite } from './TrackPointSprite';
+import TestScene from '../scenes/PlayScene';
 
 export class Track {
 	// public x: number[] = [];
@@ -7,7 +8,7 @@ export class Track {
 
 	private linePoints: Sprite[] = [];
 
-	constructor(private graphics: Phaser.GameObjects.Graphics, private scene: Phaser.Scene) {
+	constructor(private graphics: Phaser.GameObjects.Graphics, private scene: TestScene) {
 
 	}
 
@@ -17,6 +18,7 @@ export class Track {
 
 		let pointSpite = new TrackPointSprite(this.scene, newX, newY, 'centroid', 0);
 		this.scene.add.existing(pointSpite);
+		this.scene.container.add(pointSpite);
 		pointSpite.setTrack(this);
 		pointSpite.setInteractive();
 		this.scene.input.setDraggable(pointSpite);
