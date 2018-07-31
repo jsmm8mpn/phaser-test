@@ -12,31 +12,30 @@ export class TrackService {
 	private didMouseMove: boolean = false;
 
 	constructor(private scene: TestScene, private input: Phaser.Input.InputPlugin, private hoverGraphics: Phaser.GameObjects.Graphics, private trackGraphics: Phaser.GameObjects.Container) {
-		window.addEventListener("mousedown", (e: any) => {
-			if (e.which === 1) {
-				this.onLeftMouseDown(e);
-			} else if (e.which === 3) {
-				this.onRightMouseDown(e);
-			}
-		}, true);
 
-		window.addEventListener("mousemove",(e: any) => {
-			this.onMouseMove(e);
-		}, true);
-		window.addEventListener("mouseup",(e:any) => {
-			if (e.which === 1) {
-				this.onLeftMouseUp(e);
-			} else if (e.which === 3) {
-				this.onRightMouseUp(e);
+		this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+			if (pointer.buttons === 1) {
+				this.onLeftMouseDown(pointer);
+			} else if (pointer.buttons === 2) {
+				this.onRightMouseDown(pointer);
 			}
-		}, true);
-		window.addEventListener("contextmenu",(e:any) => {
-			e.preventDefault();
-		}, true);
+		});
+
+		this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+			this.onMouseMove(pointer);
+		});
+
+		this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+			if (pointer.buttons === 1) {
+				this.onLeftMouseUp(pointer);
+			} else if (pointer.buttons === 2) {
+				this.onRightMouseUp(pointer);
+			}
+		});
 
 		this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
-			let newX = this.getSnapPoint(dragX);
-			let newY = this.getSnapPoint(dragY);
+			let newX = this.getSnapPoint(pointer.worldX);
+			let newY = this.getSnapPoint(pointer.worldY);
 			gameObject.x = newX;
 			gameObject.y = newY;
 			gameObject.track.plot();
@@ -45,7 +44,6 @@ export class TrackService {
 
 	private getSnapPoint(pos: number) {
 		let newPos = (pos) / this.scene.getScale();
-		console.log(newPos);
 		if ((newPos % 50) > 25) {
 			return Math.ceil(newPos / 50) * 50;
 		} else {
@@ -65,21 +63,21 @@ export class TrackService {
 	// 	return Math.floor(pos / 50) * 50;
 	// }
 
-	private onLeftMouseDown(e: any) {
+	private onLeftMouseDown(pointer: Phaser.Input.Pointer) {
 		this.mouseDownTime = new Date().getTime();
 		this.didMouseMove = false;
 	}
 
-	private onRightMouseDown(e: any) {
+	private onRightMouseDown(pointer: Phaser.Input.Pointer) {
 		this.mouseDownTime = new Date().getTime();
 		this.didMouseMove = false;
 	}
 
-	private onMouseMove(e: any) {
+	private onMouseMove(pointer: Phaser.Input.Pointer) {
 		this.didMouseMove = true;
 
-		let newX = this.getSnapPoint(e.clientX);
-		let newY = this.getSnapPoint(e.clientY);
+		let newX = this.getSnapPoint(pointer.worldX);
+		let newY = this.getSnapPoint(pointer.worldY);
 		this.hoverGraphics.clear();
 		this.hoverGraphics.fillStyle(0x000000, 0.2);
 		// this.hoverGraphics.fillRectShape(new Rectangle(newX, newY, 50, 50));
@@ -91,23 +89,23 @@ export class TrackService {
 		}
 	}
 
-	private onLeftMouseUp(e: any) {
+	private onLeftMouseUp(pointer: Phaser.Input.Pointer) {
 		let upTime = new Date().getTime();
 		if (upTime - this.mouseDownTime < 300) {
-			this.onClick(e);
+			this.onClick(pointer);
 		}
 	}
 
-	private onRightMouseUp(e: any) {
+	private onRightMouseUp(pointer: Phaser.Input.Pointer) {
 		let upTime = new Date().getTime();
 		if (upTime - this.mouseDownTime < 300) {
-			this.onRightClick(e);
+			this.onRightClick(pointer);
 		}
 	}
 
-	private onClick(e) {
-		let newX = this.getSnapPoint(e.clientX);
-		let newY = this.getSnapPoint(e.clientY);
+	private onClick(pointer: Phaser.Input.Pointer) {
+		let newX = this.getSnapPoint(pointer.worldX);
+		let newY = this.getSnapPoint(pointer.worldY);
 		if (!this.currentTrack) {
 			let graphics = this.scene.add.graphics();
 			this.trackGraphics.add(graphics);
@@ -117,7 +115,7 @@ export class TrackService {
 		this.currentTrack.plot();
 	}
 
-	private onRightClick(e) {
+	private onRightClick(pointer: Phaser.Input.Pointer) {
 		if (this.currentTrack) {
 			this.tracks.push(this.currentTrack);
 			this.currentTrack.plot();
