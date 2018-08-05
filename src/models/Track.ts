@@ -25,7 +25,15 @@ export class Track {
 		this.linePoints.push(pointSpite);
 	}
 
+	public getLinePoints() {
+		return this.linePoints;
+	}
+
 	public plot(tempX?, tempY?) {
+		this.plotCurve(tempX, tempY);
+	}
+
+	public plotCatmull(tempX?, tempY?) {
 		let x = [];
 		let y = [];
 
@@ -43,6 +51,7 @@ export class Track {
 		}
 
 		this.graphics.clear();
+		this.graphics.lineStyle(5, 0x000000);
 
 		var ix = 0;
 
@@ -60,7 +69,7 @@ export class Track {
 
 			if (ix > 0)
 			{
-				Phaser.Math.Angle.BetweenPoints(path[ix - 1], node);
+				node.angle = Phaser.Math.Angle.BetweenPoints(path[ix - 1], node);
 			}
 
 			path.push(node);
@@ -76,4 +85,37 @@ export class Track {
 		this.graphics.strokePath();
 
 	}
+
+	public plotCurve(tempX?, tempY?) {
+		let x = [];
+		let y = [];
+
+		// TODO: Optimize: Call this only when a point changes
+		for (let sprite of this.linePoints) {
+			x.push(sprite.x);
+			y.push(sprite.y);
+		}
+
+		if (tempX) {
+			x.push(tempX);
+		}
+		if (tempY) {
+			y.push(tempY);
+		}
+
+		this.graphics.clear();
+		this.graphics.lineStyle(5, 0x000000);
+
+		this.graphics.beginPath().moveTo(x[0],y[0]);
+
+		for (var i = 1; i <= x.length; i += 1) {
+			let px = x[i];
+			let py = y[i];
+			this.graphics.lineTo(px, py);
+		}
+
+		this.graphics.strokePath();
+	}
+
+
 }

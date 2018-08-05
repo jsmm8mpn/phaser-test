@@ -42,6 +42,10 @@ export class TrackService {
 		});
 	}
 
+	public getTracks() {
+		return this.tracks;
+	}
+
 	private getSnapPoint(pos: number) {
 		let newPos = (pos) / this.scene.getScale();
 		if ((newPos % 50) > 25) {
@@ -106,16 +110,26 @@ export class TrackService {
 	private onClick(pointer: Phaser.Input.Pointer) {
 		let newX = this.getSnapPoint(pointer.worldX);
 		let newY = this.getSnapPoint(pointer.worldY);
-		if (!this.currentTrack) {
-			let graphics = this.scene.add.graphics();
-			this.trackGraphics.add(graphics);
-			this.currentTrack = new Track(graphics, this.scene);
+		if (this.currentTrack && this.scene.pointIsCity(newX, newY)) {
+			this.currentTrack.addPoint(newX, newY);
+			this.closeTrack();
+		} else {
+			if (!this.currentTrack) {
+				let graphics = this.scene.add.graphics();
+				graphics.lineStyle(100, 0x000000);
+				this.trackGraphics.add(graphics);
+				this.currentTrack = new Track(graphics, this.scene);
+			}
+			this.currentTrack.addPoint(newX, newY);
+			this.currentTrack.plot();
 		}
-		this.currentTrack.addPoint(newX, newY);
-		this.currentTrack.plot();
 	}
 
 	private onRightClick(pointer: Phaser.Input.Pointer) {
+		this.closeTrack();
+	}
+
+	private closeTrack() {
 		if (this.currentTrack) {
 			this.tracks.push(this.currentTrack);
 			this.currentTrack.plot();
