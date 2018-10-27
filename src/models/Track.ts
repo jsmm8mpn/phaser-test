@@ -29,6 +29,10 @@ export class Track {
 		return this.linePoints;
 	}
 
+	public getLength() {
+		return 0;
+	}
+
 	public plot(tempX?, tempY?) {
 		this.plotCurve(tempX, tempY);
 	}

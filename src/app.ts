@@ -3,6 +3,7 @@
 import 'phaser';
 
 import TestScene from './scenes/PlayScene';
+import { UIScene } from './scenes/UIScene';
 
 const config:GameConfig = {
 	type: Phaser.AUTO,
@@ -12,7 +13,7 @@ const config:GameConfig = {
 	resolution: 1,
 	backgroundColor: "#EDEEC9",
 	scene: [
-		TestScene
+		TestScene, UIScene
 	]
 	// physics: {
 	// 	default: 'arcade',
