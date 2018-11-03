@@ -1,12 +1,15 @@
 import Sprite = Phaser.GameObjects.Sprite;
 import { TrackPointSprite } from './TrackPointSprite';
 import TestScene from '../scenes/PlayScene';
+import { City } from './City';
+import { Train } from './Train';
 
 export class Track {
 	// public x: number[] = [];
 	// public y: number[] = [];
 
 	private linePoints: Sprite[] = [];
+	private cities: City[] = [];
 
 	constructor(private graphics: Phaser.GameObjects.Graphics, private scene: TestScene) {
 
@@ -20,9 +23,26 @@ export class Track {
 		this.scene.add.existing(pointSpite);
 		this.scene.container.add(pointSpite);
 		pointSpite.setTrack(this);
+		let city = this.scene.pointIsCity(newX, newY);
+		if (city) {
+			pointSpite.setCity(city);
+			this.cities.push(city);
+		}
 		pointSpite.setInteractive();
 		this.scene.input.setDraggable(pointSpite);
 		this.linePoints.push(pointSpite);
+	}
+
+	public supportsTrain(train: Train) {
+		let hasFrom = false, hasTo = false;
+		for (let city of this.cities) {
+			if (city === train.fromCity) {
+				hasFrom = true;
+			} else if (city === train.toCity) {
+				hasTo = true;
+			}
+		}
+		return hasFrom && hasTo;
 	}
 
 	public getLinePoints() {
